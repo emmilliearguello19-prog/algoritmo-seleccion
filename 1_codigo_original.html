@@ -2,20 +2,18 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Portada</title>
+<title>Comparar Números</title>
 
 <style>
 body{
-    font-family:'Segoe UI', sans-serif;
+    font-family: 'Segoe UI', sans-serif;
     background:#f8c8dc;
     margin:0;
     min-height:100vh;
-
     display:flex;
     flex-direction:column;
     justify-content:center;
     align-items:center;
-
     transition: background 0.3s ease, color 0.3s ease;
 }
 
@@ -25,10 +23,20 @@ body{
     border-radius:12px;
     box-shadow:0 10px 25px rgba(0,0,0,0.2);
     text-align:center;
+    width:350px;
+}
+
+input{
+    width:100%;
+    padding:8px;
+    margin:10px 0;
+    border-radius:6px;
+    border:1px solid #ccc;
 }
 
 button{
-    padding:10px 20px;
+    padding:10px 15px;
+    margin:5px;
     border:none;
     border-radius:6px;
     cursor:pointer;
@@ -39,6 +47,11 @@ button{
 
 button:hover{
     opacity:0.8;
+}
+
+.footer{
+    margin-top:20px;
+    font-size:14px;
 }
 
 /* MODO OSCURO */
@@ -57,13 +70,45 @@ button:hover{
 <body>
 
 <div class="container">
-    <h1>Bienvenida</h1>
-    <p>Este es mi código original con modo oscuro funcionando.</p>
-    <button onclick="activarModo()">Modo Oscuro</button>
+    <h2>Comparar Dos Números</h2>
+
+    <input type="number" id="num1" placeholder="Número 1">
+    <input type="number" id="num2" placeholder="Número 2">
+
+    <button onclick="comparar()">Comparar</button>
+    <button onclick="modoOscuro()">Modo Oscuro</button>
+    <button onclick="window.location.href='index.html'">Volver al Menú</button>
+
+    <p id="resultado"></p>
+
+    <div class="footer">
+        <p>Tu Nombre Aquí</p>
+        <p>Nombre del Profesor</p>
+        <p>Asignatura</p>
+    </div>
 </div>
 
 <script>
-function activarModo(){
+function comparar(){
+    let n1 = parseFloat(document.getElementById("num1").value);
+    let n2 = parseFloat(document.getElementById("num2").value);
+    let resultado = document.getElementById("resultado");
+
+    if(isNaN(n1) || isNaN(n2)){
+        resultado.innerText = "Ingresa ambos números.";
+        return;
+    }
+
+    if(n1 > n2){
+        resultado.innerText = "El número 1 es mayor.";
+    }else if(n2 > n1){
+        resultado.innerText = "El número 2 es mayor.";
+    }else{
+        resultado.innerText = "Ambos números son iguales.";
+    }
+}
+
+function modoOscuro(){
     document.body.classList.toggle("dark-mode");
 }
 </script>
