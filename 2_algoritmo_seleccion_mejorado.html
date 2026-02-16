@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>🌸 Algoritmo de Selección 🌸</title>
+
+<style>
+body{
+    font-family:'Segoe UI', sans-serif;
+    background:#f8c8dc;
+    margin:0;
+    padding:20px;
+    text-align:center;
+    transition:0.4s;
+}
+
+.dark{
+    background:#121212;
+    color:white;
+}
+
+h1{
+    font-size:48px;
+    color:#b03060;
+}
+
+.dark h1{
+    color:#ff85a2;
+}
+
+.seccion{
+    margin-top:30px;
+    padding:20px;
+    background:white;
+    border-radius:15px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.2);
+    transition:0.4s;
+}
+
+.numero{
+    display:inline-block;
+    width:45px;
+    height:45px;
+    line-height:45px;
+    margin:4px;
+    border-radius:8px;
+    font-weight:bold;
+    background:#ffe4ec;
+    color:#000;
+    transition:0.3s;
+}
+
+.dark .numero{
+    background:#ff4d88;
+    color:white;
+    box-shadow:0 0 8px rgba(255,77,136,0.7);
+}
+
+.comparando{ background:#4da6ff !important; color:white; }
+.minimo{ background:#ff2e63 !important; color:white; }
+.ordenado{ background:#2ecc71 !important; color:white; }
+
+.temporal{
+    width:70px;
+    height:70px;
+    line-height:70px;
+    margin:10px auto;
+    background:#ff4d88;
+    color:white;
+    border-radius:10px;
+    font-size:22px;
+    font-weight:bold;
+    box-shadow:0 0 10px rgba(255,77,136,0.6);
+}
+
+button{
+    padding:10px 20px;
+    border:none;
+    border-radius:8px;
+    background:#d63384;
+    color:white;
+    cursor:pointer;
+    margin:5px;
+    font-weight:bold;
+}
+
+button:hover{
+    opacity:0.8;
+}
+
+input{
+    padding:8px;
+    border-radius:6px;
+    border:1px solid #ccc;
+}
+
+.slider{
+    width:200px;
+}
+
+footer{
+    margin-top:40px;
+    font-size:14px;
+    color:#333;
+}
+
+.dark footer{
+    color:white;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🌸 Algoritmo de Selección 🌸</h1>
+
+<!-- BOTÓN VOLVER AL MENÚ -->
+<button onclick="toggleMode()">🌙 Modo Oscuro</button>
+<button onclick="location.href='index.html'">🏠 Volver al Menú Principal</button>
+
+<br><br>
+
+<input type="text" id="manualInput" placeholder="Ingrese 20 números separados por coma">
+<button onclick="usarManual()">Usar Números</button>
+<button onclick="generar()">Generar Aleatorios</button>
+
+<br><br>
+
+Velocidad:
+<input type="range" min="50" max="1000" value="300" id="velocidad" class="slider">
+
+<button onclick="iniciar()">🚀 Iniciar</button>
+
+<div class="seccion">
+<h2>Menor → Mayor</h2>
+Comparaciones: <span id="compA">0</span> |
+Intercambios: <span id="intA">0</span> |
+Tiempo: <span id="timeA">0</span> ms
+<div id="arrayA"></div>
+<h3>Mesa Temporal</h3>
+<div class="temporal" id="tempA">-</div>
+</div>
+
+<div class="seccion">
+<h2>Mayor → Menor</h2>
+Comparaciones: <span id="compD">0</span> |
+Intercambios: <span id="intD">0</span> |
+Tiempo: <span id="timeD">0</span> ms
+<div id="arrayD"></div>
+<h3>Mesa Temporal</h3>
+<div class="temporal" id="tempD">-</div>
+</div>
+
+<footer>
+Hecho por Emmillie Arguello | Profesor: Eduwin Florez | Asignatura: Estructura de Datos
+</footer>
+
+<script>
+let original = [];
+let asc = [];
+let desc = [];
+
+function generar(){
+    original=[];
+    for(let i=0;i<20;i++){
+        original.push(Math.floor(Math.random()*100));
+    }
+    actualizar();
+}
+
+function usarManual(){
+    let valores=document.getElementById("manualInput").value.split(",");
+    if(valores.length!=20){
+        alert("Debe ingresar exactamente 20 números");
+        return;
+    }
+    original=valores.map(Number);
+    actualizar();
+}
+
+function actualizar(){
+    asc=[...original];
+    desc=[...original];
+    mostrar(asc,"arrayA");
+    mostrar(desc,"arrayD");
+}
+
+function mostrar(arr,id){
+    let cont=document.getElementById(id);
+    cont.innerHTML="";
+    arr.forEach(n=>{
+        let div=document.createElement("div");
+        div.className="numero";
+        div.textContent=n;
+        cont.appendChild(div);
+    });
+}
+
+function sleep(ms){
+    return new Promise(r=>setTimeout(r,ms));
+}
+
+async function selection(arr,idArray,idComp,idInt,idTemp,idTime,modo){
+    let comp=0;
+    let interc=0;
+    let start=performance.now();
+
+    for(let i=0;i<arr.length-1;i++){
+        let idx=i;
+        let elementos=document.getElementById(idArray).children;
+
+        for(let j=i+1;j<arr.length;j++){
+            comp++;
+            document.getElementById(idComp).textContent=comp;
+            elementos[j].classList.add("comparando");
+            await sleep(document.getElementById("velocidad").value);
+
+            if((modo=="asc" && arr[j]<arr[idx]) || (modo=="desc" && arr[j]>arr[idx])){
+                idx=j;
+            }
+
+            elementos[j].classList.remove("comparando");
+        }
+
+        document.getElementById(idTemp).textContent=arr[idx];
+        await sleep(300);
+
+        if(idx!=i){
+            let temp=arr[i];
+            arr[i]=arr[idx];
+            arr[idx]=temp;
+            interc++;
+            document.getElementById(idInt).textContent=interc;
+        }
+
+        mostrar(arr,idArray);
+        document.getElementById(idTemp).textContent="-";
+    }
+
+    let end=performance.now();
+    document.getElementById(idTime).textContent=Math.floor(end-start);
+}
+
+async function iniciar(){
+    asc=[...original];
+    desc=[...original];
+
+    await Promise.all([
+        selection(asc,"arrayA","compA","intA","tempA","timeA","asc"),
+        selection(desc,"arrayD","compD","intD","tempD","timeD","desc")
+    ]);
+
+    alert("✨ Proceso completado ✨");
+}
+
+function toggleMode(){
+    document.body.classList.toggle("dark");
+}
+
+generar();
+</script>
+
+</body>
+</html>
